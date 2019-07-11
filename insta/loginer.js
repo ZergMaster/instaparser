@@ -8,7 +8,7 @@ Loginer = async (page, config) => {
     await this.page.goto("https://www.instagram.com/accounts/login/?source=auth_switcher", {
       waitUntil: 'networkidle2'
     });
-    
+
     const navigationPromise = this.page.waitForNavigation();
     await this.page.waitForSelector("[name='username']");
     await this.page.click("[name='username']");
@@ -29,13 +29,11 @@ Loginer = async (page, config) => {
 
     await this.page.evaluate(() => {
       let btns = [...document.querySelector(".HmktE").querySelectorAll("button")];
-      btns.forEach(function (btn) {
+      btns.forEach(async (btn) => {
         if ((btn.innerText == "Log In") || (btn.innerText == "Войти"))
-          btn.click();
+          await Promise.all[btn.click(), navigationPromise];
       });
     });
-
-    await navigationPromise;
 
     //Optional
     //check if the element asking to download the app arises
@@ -54,12 +52,10 @@ Loginer = async (page, config) => {
       await this.page.waitForSelector(".aOOlW.HoLwm", {
         timeout: 5000
       });
-      await this.page.click(".aOOlW.HoLwm");
+      await Promise.all[this.page.click(".aOOlW.HoLwm"), navigationPromise];
     } catch (err) {
       await loginWithFaceBook();
     }
-
-    await navigationPromise;
 
     await this.page.waitForSelector(".glyphsSpriteMobile_nav_type_logo");
 
@@ -75,28 +71,25 @@ Loginer = async (page, config) => {
       btns.forEach(async (btn) => {
         console.log(`btn.innerText.includes("Facebook") === ${btn.innerText.includes("Facebook")}`);
         if (btn.innerText.includes("Facebook")) {
-          btn.click();
-          await navigationPromise;
+          await Promise.all[btn.click(), navigationPromise];
         }
       });
     });
 
-    
+
     await this.page.waitForSelector("[name='email']");
     await this.page.click("[name='email']");
     await keyBoardWrite(config.fblogin);
     await this.page.keyboard.down("Tab");
     await keyBoardWrite(config.fbpass);
-    
+
     await this.page.evaluate(() => {
       let btns = [...document.querySelector(".XFYOY").querySelectorAll("button")];
-      btns.forEach(function (btn) {
+      btns.forEach(async (btn) => {
         if ((btn.innerText == "Log In") || (btn.innerText == "Войти"))
-          btn.click();
+          await Promise.all[btn.click(), navigationPromise];
       });
     });
-
-    await navigationPromise;
 
     // await this.page.waitForSelector(".aOOlW.HoLwm", {
     //   timeout: 5000

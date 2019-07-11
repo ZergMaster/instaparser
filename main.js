@@ -19,6 +19,6 @@ const targetAccount = 'vashloft'; //'loftdesigne';
 
   console.log('login complete')
 
-  instaParser(page, 'loftdesigne');
+  instaParser(page, targetAccount);
 
 })();
