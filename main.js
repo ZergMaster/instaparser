@@ -2,6 +2,8 @@ const puppeteer = require('puppeteer');
 const Loginer = require('./insta/loginer');
 const instaParser = require('./insta/lidMiner');
 
+const targetAccount = 'vashloft'; //'loftdesigne';
+
 
 (async () => {
 
@@ -17,6 +19,6 @@ const instaParser = require('./insta/lidMiner');
 
   console.log('login complete')
 
-  // instaParser(page, 'loftdesigne');
+  instaParser(page, 'loftdesigne');
 
 })();
