@@ -1,7 +1,24 @@
-const screenshot = 'instagram.png';
+const mkdirp = require('mkdirp');
+const jsonfile = require('jsonfile');
+
 
 Loginer = async (page, config) => {
   this.page = page;
+
+  const cookiepathname = `/tmp/${config.login}`;
+  try {
+    // If file exist load the cookies
+    const cookiesArr = require(`.${cookiepathname}/data.json`)
+    if (cookiesArr.length !== 0) {
+      for (let cookie of cookiesArr) {
+        await page.setCookie(cookie)
+      }
+      console.log('Session has been loaded in the browser')
+      return true
+    }
+  } catch (e) {
+    console.log('cookies doesnt exixst');
+  }
 
   const login = async () => {
 
@@ -47,6 +64,23 @@ Loginer = async (page, config) => {
     // }
 
     //Optional
+
+
+    // Save Session Cookies
+
+    const cookiesObject = await this.page.cookies()
+    mkdirp(`.${cookiepathname}`, async (err) => {
+      if (err) console.error(`Make dir ERROR: ${err}`)
+      else jsonfile.writeFile(`${cookiepathname}/data.json`, cookiesObject, { spaces: 2 },
+        (err) => {
+          if (err) {
+            console.log('The file could not be written.', err);
+          }
+          console.log(`Session has been successfully saved to ${cookiepathname}/data.json`);
+        });
+    });
+    // Write cookies to temp file to be used in other profile pages
+
     //check if the app asks for notifications
     try {
       await this.page.waitForSelector(".aOOlW.HoLwm", {
@@ -59,9 +93,11 @@ Loginer = async (page, config) => {
 
     await this.page.waitForSelector(".glyphsSpriteMobile_nav_type_logo");
 
-    await this.page.screenshot({ path: screenshot });
-
-    console.log('See screenshot: ' + screenshot)
+    const pathname = `./history/${config.login}`;
+    mkdirp(pathname, async (err) => {
+      if (err) console.error(`Make dir ERROR: ${err}`)
+      else await this.page.screenshot({ path: `${pathname}/${config.login}_${new Date().getTime()}.png` });
+    });
   }
 
   const loginWithFaceBook = async () => {
