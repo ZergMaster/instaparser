@@ -1,27 +1,25 @@
 const screenshot = 'instagram.png';
 
-Loginer = async (page, log, pass) => {
+Loginer = async (page, config) => {
   this.page = page;
-  this.login = log;
-  this.pass = pass;
 
   const login = async () => {
 
     await this.page.goto("https://www.instagram.com/accounts/login/?source=auth_switcher", {
       waitUntil: 'networkidle2'
     });
-
+    
     const navigationPromise = this.page.waitForNavigation();
     await this.page.waitForSelector("[name='username']");
     await this.page.click("[name='username']");
-    await keyBoardWrite(this.login);
+    await keyBoardWrite(config.login);
     // await page.type("[name='username']", process.env.INSTAGRAM_USER);
 
     //password
     await this.page.keyboard.down("Tab");
     //passwor to be visible
     // page.$eval("._2hvTZ.pexuQ.zyHYP[type='password']", (el) => el.setAttribute("type", "text"));
-    await keyBoardWrite(this.pass);
+    await keyBoardWrite(config.pass);
     // await page.keyboard.type(process.env.INSTAGRAM_PWD);
 
     //the selector of the "Login" button
@@ -58,7 +56,7 @@ Loginer = async (page, log, pass) => {
       });
       await this.page.click(".aOOlW.HoLwm");
     } catch (err) {
-      console.log(err);
+      await loginWithFaceBook();
     }
 
     await navigationPromise;
@@ -68,6 +66,42 @@ Loginer = async (page, log, pass) => {
     await this.page.screenshot({ path: screenshot });
 
     console.log('See screenshot: ' + screenshot)
+  }
+
+  const loginWithFaceBook = async () => {
+    console.log('...try to login with facebook');
+    await this.page.evaluate(() => {
+      const btns = [...document.querySelector(".XFYOY").querySelectorAll("button")];
+      btns.forEach(async (btn) => {
+        console.log(`btn.innerText.includes("Facebook") === ${btn.innerText.includes("Facebook")}`);
+        if (btn.innerText.includes("Facebook")) {
+          btn.click();
+          await navigationPromise;
+        }
+      });
+    });
+
+    
+    await this.page.waitForSelector("[name='email']");
+    await this.page.click("[name='email']");
+    await keyBoardWrite(config.fblogin);
+    await this.page.keyboard.down("Tab");
+    await keyBoardWrite(config.fbpass);
+    
+    await this.page.evaluate(() => {
+      let btns = [...document.querySelector(".XFYOY").querySelectorAll("button")];
+      btns.forEach(function (btn) {
+        if ((btn.innerText == "Log In") || (btn.innerText == "Войти"))
+          btn.click();
+      });
+    });
+
+    await navigationPromise;
+
+    // await this.page.waitForSelector(".aOOlW.HoLwm", {
+    //   timeout: 5000
+    // });
+    // await this.page.click(".aOOlW.HoLwm");
   }
 
   const keyBoardWrite = async (value) => {

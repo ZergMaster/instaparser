@@ -1,0 +1,8 @@
+after git clone:
+
+npm install --save puppeteer
+
+then:
+
+
+
