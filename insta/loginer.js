@@ -1,5 +1,5 @@
 const mkdirp = require('mkdirp');
-const jsonfile = require('jsonfile');
+const fs = require('fs');
 
 
 Loginer = async (page, config) => {
@@ -71,11 +71,12 @@ Loginer = async (page, config) => {
     const cookiesObject = await this.page.cookies()
     mkdirp(`.${cookiepathname}`, async (err) => {
       if (err) console.error(`Make dir ERROR: ${err}`)
-      else jsonfile.writeFile(`${cookiepathname}/data.json`, cookiesObject, { spaces: 2 },
+      else fs.writeFile(`.${cookiepathname}/data.json`, JSON.stringify(cookiesObject, null, '  '),
         (err) => {
           if (err) {
             console.log('The file could not be written.', err);
           }
+          console.log(cookiesObject);
           console.log(`Session has been successfully saved to ${cookiepathname}/data.json`);
         });
     });
