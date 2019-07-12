@@ -7,7 +7,7 @@ const targetAccount = 'vashloft'; //'loftdesigne';
 
 (async () => {
 
-  const config = require('./config.json');
+  const config = require('./configs/viktorkroft.config.json');
 
   const browser = await puppeteer.launch({
     headless: false
