@@ -4,21 +4,31 @@ const fs = require('fs');
 
 Loginer = async (page, config) => {
   this.page = page;
-
+  await this.page.goto("https://www.instagram.com");
+  console.log(await this.page.cookies());
   const cookiepathname = `/tmp/${config.login}`;
-  try {
-    // If file exist load the cookies
-    const cookiesArr = require(`.${cookiepathname}/data.json`)
-    if (cookiesArr.length !== 0) {
-      for (let cookie of cookiesArr) {
-        await page.setCookie(cookie)
+
+  await new Promise((resolve) => {
+    fs.readFile(`.${cookiepathname}/data.json`, async (err, data) => {
+      if(err) console.log(`read cookie ERROR: ${err}`);
+      else {
+        const cookiesArr = JSON.parse(data);
+        if (cookiesArr.length !== 0) {
+          for (let cookie of cookiesArr) {
+            await page.setCookie(cookie);
+          }
+          console.log('***Session has been loaded in the browser');
+        } else {
+          console.log('! cookies doesnt exixst');
+        }
       }
-      console.log('Session has been loaded in the browser')
-      return true
-    }
-  } catch (e) {
-    console.log('cookies doesnt exixst');
-  }
+      resolve();
+    });
+  });
+  
+
+  console.log('-------------------------');
+  console.log(await this.page.cookies());
 
   const login = async () => {
 
@@ -65,23 +75,6 @@ Loginer = async (page, config) => {
 
     //Optional
 
-
-    // Save Session Cookies
-
-    const cookiesObject = await this.page.cookies()
-    mkdirp(`.${cookiepathname}`, async (err) => {
-      if (err) console.error(`Make dir ERROR: ${err}`)
-      else fs.writeFile(`.${cookiepathname}/data.json`, JSON.stringify(cookiesObject, null, '  '),
-        (err) => {
-          if (err) {
-            console.log('The file could not be written.', err);
-          }
-          console.log(cookiesObject);
-          console.log(`Session has been successfully saved to ${cookiepathname}/data.json`);
-        });
-    });
-    // Write cookies to temp file to be used in other profile pages
-
     //check if the app asks for notifications
     try {
       await this.page.waitForSelector(".aOOlW.HoLwm", {
@@ -98,6 +91,20 @@ Loginer = async (page, config) => {
     mkdirp(pathname, async (err) => {
       if (err) console.error(`Make dir ERROR: ${err}`)
       else await this.page.screenshot({ path: `${pathname}/${config.login}_${new Date().getTime()}.png` });
+    });
+
+    // Save Session Cookies
+    const cookiesObject = await this.page.cookies()
+    mkdirp(`.${cookiepathname}`, async (err) => {
+      if (err) console.error(`Make dir ERROR: ${err}`)
+      else fs.writeFile(`.${cookiepathname}/data.json`, JSON.stringify(cookiesObject, null, '  '),
+        (err) => {
+          if (err) {
+            console.log('The file could not be written.', err);
+          }
+          console.log(cookiesObject);
+          console.log(`Session has been successfully saved to ${cookiepathname}/data.json`);
+        });
     });
   }
 
