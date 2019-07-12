@@ -5,7 +5,6 @@ const fs = require('fs');
 Loginer = async (page, config) => {
   this.page = page;
   await this.page.goto("https://www.instagram.com");
-  console.log(await this.page.cookies());
   const cookiepathname = `/tmp/${config.login}`;
 
   await new Promise((resolve) => {
@@ -25,10 +24,6 @@ Loginer = async (page, config) => {
       resolve();
     });
   });
-  
-
-  console.log('-------------------------');
-  console.log(await this.page.cookies());
 
   const login = async () => {
 
@@ -37,45 +32,16 @@ Loginer = async (page, config) => {
     });
 
     const navigationPromise = this.page.waitForNavigation();
-    await this.page.waitForSelector("[name='username']");
-    await this.page.click("[name='username']");
-    await keyBoardWrite(config.login);
-    // await page.type("[name='username']", process.env.INSTAGRAM_USER);
-
-    //password
-    await this.page.keyboard.down("Tab");
-    //passwor to be visible
-    // page.$eval("._2hvTZ.pexuQ.zyHYP[type='password']", (el) => el.setAttribute("type", "text"));
-    await keyBoardWrite(config.pass);
-    // await page.keyboard.type(process.env.INSTAGRAM_PWD);
-
-    //the selector of the "Login" button
-    // await page.click("._0mzm-.sqdOP.L3NKy>.Igw0E.IwRSH.eGOV_._4EzTm");
-
-    await this.page.waitFor(500);
-
-    await this.page.evaluate(() => {
-      let btns = [...document.querySelector(".HmktE").querySelectorAll("button")];
-      btns.forEach(async (btn) => {
-        if ((btn.innerText == "Log In") || (btn.innerText == "Войти"))
-          await Promise.all[btn.click(), navigationPromise];
+    
+    try {
+      await this.page.waitForSelector("[name='username']", {
+        timeout: 5000
       });
-    });
+      await doLogin();
+    } catch (err) {
+      console.log('You already logined from cookies!');
+    }
 
-    //Optional
-    //check if the element asking to download the app arises
-    // try {
-    // 	await loginPage.waitForSelector("._3m3RQ._7XMpj",{
-    // 		timeout:3000
-    // 	});
-    // 	await loginPage.click("._3m3RQ._7XMpj");
-    // } catch (err) {
-
-    // }
-
-    //Optional
-
-    //check if the app asks for notifications
     try {
       await this.page.waitForSelector(".aOOlW.HoLwm", {
         timeout: 5000
@@ -87,11 +53,11 @@ Loginer = async (page, config) => {
 
     await this.page.waitForSelector(".glyphsSpriteMobile_nav_type_logo");
 
-    const pathname = `./history/${config.login}`;
-    mkdirp(pathname, async (err) => {
-      if (err) console.error(`Make dir ERROR: ${err}`)
-      else await this.page.screenshot({ path: `${pathname}/${config.login}_${new Date().getTime()}.png` });
-    });
+    // const pathname = `./history/${config.login}`;
+    // mkdirp(pathname, async (err) => {
+    //   if (err) console.error(`Make dir ERROR: ${err}`)
+    //   else await this.page.screenshot({ path: `${pathname}/${config.login}_${new Date().getTime()}.png` });
+    // });
 
     // Save Session Cookies
     const cookiesObject = await this.page.cookies()
@@ -102,9 +68,31 @@ Loginer = async (page, config) => {
           if (err) {
             console.log('The file could not be written.', err);
           }
-          console.log(cookiesObject);
           console.log(`Session has been successfully saved to ${cookiepathname}/data.json`);
         });
+    });
+  }
+
+  const doLogin = async() => {
+    await this.page.click("[name='username']");
+    await keyBoardWrite(config.login);
+    // await page.type("[name='username']", process.env.INSTAGRAM_USER);
+
+    //password
+    await this.page.keyboard.down("Tab");
+    //passwor to be visible
+    // page.$eval("._2hvTZ.pexuQ.zyHYP[type='password']", (el) => el.setAttribute("type", "text"));
+    await keyBoardWrite(config.pass);
+    // await page.keyboard.type(process.env.INSTAGRAM_PWD);
+
+    await this.page.waitFor(500);
+
+    await this.page.evaluate(() => {
+      let btns = [...document.querySelector(".HmktE").querySelectorAll("button")];
+      btns.forEach(async (btn) => {
+        if ((btn.innerText == "Log In") || (btn.innerText == "Войти"))
+          await Promise.all[btn.click(), navigationPromise];
+      });
     });
   }
 
