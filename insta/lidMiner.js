@@ -22,6 +22,10 @@ const instaParser = async (page, account) => {
   nal[1].click();
   await navigationPromise;
   console.log('hello, friends');
+
+  const buttons = await page.$$('.L3NKy');
+  console.log(` --> buttons.length = ${buttons.length}`);
+  console.log(buttons);
 }
 
 module.exports = instaParser;
