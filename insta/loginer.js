@@ -9,7 +9,7 @@ Loginer = async (page, config) => {
 
   await new Promise((resolve) => {
     fs.readFile(`.${cookiepathname}/data.json`, async (err, data) => {
-      if(err) console.log(`read cookie ERROR: ${err}`);
+      if (err) console.log(`read cookie ERROR: ${err}`);
       else {
         const cookiesArr = JSON.parse(data);
         if (cookiesArr.length !== 0) {
@@ -32,7 +32,7 @@ Loginer = async (page, config) => {
     });
 
     const navigationPromise = this.page.waitForNavigation();
-    
+
     try {
       await this.page.waitForSelector("[name='username']", {
         timeout: 5000
@@ -73,7 +73,7 @@ Loginer = async (page, config) => {
     });
   }
 
-  const doLogin = async() => {
+  const doLogin = async () => {
     await this.page.click("[name='username']");
     await keyBoardWrite(config.login);
     // await page.type("[name='username']", process.env.INSTAGRAM_USER);
@@ -87,7 +87,10 @@ Loginer = async (page, config) => {
 
     await this.page.waitFor(500);
 
+    page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+
     await this.page.evaluate(() => {
+      console.log(`url is ${location.href}`);
       let btns = [...document.querySelector(".HmktE").querySelectorAll("button")];
       btns.forEach(async (btn) => {
         if ((btn.innerText == "Log In") || (btn.innerText == "Войти"))

@@ -5,22 +5,29 @@ const instaParser = async (page, account) => {
 
   const navigationPromise = page.waitForNavigation();
 
+  page.on('console', msg => console.log('PAGE LOG:', msg.text()));
   await page.waitForSelector('.-nal3');
 
-  console.log('try to find selector....');
+  const nalSelector = '.-nal3';
+  await page.waitForSelector(nalSelector);
+
+  const resp = await page.evaluate(nalSelector => {
+    const nals = document.querySelectorAll(nalSelector);
+
+    const followersCount = nals[1].querySelector('span').title;
+    const followedCount = nals[2].querySelector('span').textContent;
+
+    return { followersCount, followedCount };
+  }, nalSelector);
+
+  console.log(' ************** resp');
+  console.log(await resp);
 
   const nal = await page.$$('.-nal3');
-
-  console.log(nal);
-
-  const followersCount = nal[1].$('span').title;
-  console.log(`followersCount ==== ${followersCount}`);
-
-  const followedCount = nal[2].$('span').innerHtml;
-  console.log(`followed to ==== ${followedCount}`);
-
   nal[1].click();
+
   await navigationPromise;
+
   console.log('hello, friends');
 
   const buttons = await page.$$('.L3NKy');
