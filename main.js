@@ -15,8 +15,7 @@ const targetAccount = 'vashloft'; //'loftdesigne';
   const browser = await puppeteer.launch({
     headless: false,
     devtools: true,
-
-  })
+  });
 
   const page = await browser.newPage();
   page.on('console', msg => console.log('PAGE LOG:', msg.text()));
@@ -26,6 +25,7 @@ const targetAccount = 'vashloft'; //'loftdesigne';
 
   console.log('-------------------------------> login complete')
 
-  new InstaLidMiner(page, targetAccount);
+  const instaParser = new InstaLidMiner(page, targetAccount);
+  instaParser.start();
 
 })();
