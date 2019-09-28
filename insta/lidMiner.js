@@ -1,38 +1,63 @@
-const instaParser = async (page, account) => {
-  await page.goto(`https://www.instagram.com/${account}`, {
-    waitUntil: 'networkidle2'
-  });
+const LidRecorder = require('./LidRecorder');
 
-  const navigationPromise = page.waitForNavigation();
+let _lidRecorder;
 
-  page.on('console', msg => console.log('PAGE LOG:', msg.text()));
-  await page.waitForSelector('.-nal3');
+class InstaParser {
 
-  const nalSelector = '.-nal3';
-  await page.waitForSelector(nalSelector);
+  constructor(page, account) {
+    this._page = page;
+    this._account = account;
 
-  const resp = await page.evaluate(nalSelector => {
-    const nals = document.querySelectorAll(nalSelector);
+    this._page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
-    const followersCount = nals[1].querySelector('span').title;
-    const followedCount = nals[2].querySelector('span').textContent;
+    this.init();
 
-    return { followersCount, followedCount };
-  }, nalSelector);
+    _lidRecorder = new LidRecorder(account);
+  }
 
-  console.log(' ************** resp');
-  console.log(await resp);
+  async init() {
+    console.log(`go to https://www.instagram.com/${this._account}`);
+    await this._page.goto(`https://www.instagram.com/${this._account}`);
 
-  const nal = await page.$$('.-nal3');
-  nal[1].click();
+    await _lidRecorder.init();
 
-  await navigationPromise;
+    await this.getFollowersCount();
+    await this.openFollowersWindow();
 
-  console.log('hello, friends');
+    console.log('hello, friends');
+  }
 
-  const buttons = await page.$$('.L3NKy');
-  console.log(` --> buttons.length = ${buttons.length}`);
-  console.log(buttons);
+  async openFollowersWindow() {
+    const nal = await this._page.$$('.-nal3');
+    nal[1].click();
+
+    // await _navigationPromise;
+  }
+
+  async getFollowersCount() {
+    await this._page.waitForSelector('.-nal3');
+
+    const nalSelector = '.-nal3';
+    await this._page.waitForSelector(nalSelector);
+
+    const followData = await this._page.evaluate(nalSelector => {
+      const nals = document.querySelectorAll(nalSelector);
+
+      const followersCount = nals[1].querySelector('span').title;
+      const followedCount = nals[2].querySelector('span').textContent;
+
+      return { followersCount, followedCount };
+    }, nalSelector);
+
+    _lidRecorder.record(followData);
+  }
 }
 
-module.exports = instaParser;
+//   const nal = await page.$$('.-nal3');
+//   nal[1].click();
+
+//   await navigationPromise;
+
+//   console.log('hello, friends');
+
+module.exports = InstaParser;

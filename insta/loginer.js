@@ -31,7 +31,7 @@ Loginer = async (page, config) => {
       waitUntil: 'networkidle2'
     });
 
-    const navigationPromise = this.page.waitForNavigation();
+    // const navigationPromise = this.page.waitForNavigation();
 
     try {
       await this.page.waitForSelector("[name='username']", {
@@ -46,7 +46,7 @@ Loginer = async (page, config) => {
       await this.page.waitForSelector(".aOOlW.HoLwm", {
         timeout: 5000
       });
-      await Promise.all[this.page.click(".aOOlW.HoLwm"), navigationPromise];
+      await Promise.all[this.page.click(".aOOlW.HoLwm")]; //, navigationPromise];
     } catch (err) {
       await loginWithFaceBook();
     }
@@ -60,16 +60,21 @@ Loginer = async (page, config) => {
     // });
 
     // Save Session Cookies
-    const cookiesObject = await this.page.cookies()
-    mkdirp(`.${cookiepathname}`, async (err) => {
-      if (err) console.error(`Make dir ERROR: ${err}`)
-      else fs.writeFile(`.${cookiepathname}/data.json`, JSON.stringify(cookiesObject, null, '  '),
-        (err) => {
-          if (err) {
-            console.log('The file could not be written.', err);
-          }
-          console.log(`Session has been successfully saved to ${cookiepathname}/data.json`);
-        });
+
+    await new Promise(async (resolve, reject) => {
+      const cookiesObject = await this.page.cookies()
+      mkdirp(`.${cookiepathname}`, async (err) => {
+        if (err) console.error(`Make dir ERROR: ${err}`)
+        else fs.writeFile(`.${cookiepathname}/data.json`, JSON.stringify(cookiesObject, null, '  '),
+          (err) => {
+            if (err) {
+              console.log('The file could not be written.', err);
+              reject(err);
+            }
+            console.log(`Session has been successfully saved to ${cookiepathname}/data.json`);
+            resolve();
+          });
+      });
     });
   }
 
@@ -94,7 +99,7 @@ Loginer = async (page, config) => {
       let btns = [...document.querySelector(".HmktE").querySelectorAll("button")];
       btns.forEach(async (btn) => {
         if ((btn.innerText == "Log In") || (btn.innerText == "Войти"))
-          await Promise.all[btn.click(), navigationPromise];
+          await Promise.all[btn.click()]; // , navigationPromise];
       });
     });
   }
@@ -106,7 +111,7 @@ Loginer = async (page, config) => {
       btns.forEach(async (btn) => {
         console.log(`btn.innerText.includes("Facebook") === ${btn.innerText.includes("Facebook")}`);
         if (btn.innerText.includes("Facebook")) {
-          await Promise.all[btn.click(), navigationPromise];
+          await Promise.all[btn.click()]; //, navigationPromise];
         }
       });
     });
@@ -122,7 +127,7 @@ Loginer = async (page, config) => {
       let btns = [...document.querySelector(".XFYOY").querySelectorAll("button")];
       btns.forEach(async (btn) => {
         if ((btn.innerText == "Log In") || (btn.innerText == "Войти"))
-          await Promise.all[btn.click(), navigationPromise];
+          await Promise.all[btn.click()]; // , navigationPromise];
       });
     });
 

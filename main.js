@@ -1,15 +1,17 @@
 const puppeteer = require('puppeteer');
 const Loginer = require('./insta/loginer');
-const instaParser = require('./insta/lidMiner');
+const InstaLidMiner = require('./insta/lidMiner');
 
 const targetAccount = 'vashloft'; //'loftdesigne';
 
 
 (async () => {
 
-  // const config = require('./configs/viktorkroft.config.json');
-  const config = require('./configs/vsevolodushka_leonov.config.json');
+  const config = require('./configs/viktorkroft.config.json');
+  // const config = require('./configs/vsevolodushka_leonov.config.json');
 
+
+  //...........
   const browser = await puppeteer.launch({
     headless: false,
     devtools: true,
@@ -22,8 +24,8 @@ const targetAccount = 'vashloft'; //'loftdesigne';
 
   await Loginer(page, config.instagram);
 
-  console.log('login complete')
+  console.log('-------------------------------> login complete')
 
-  instaParser(page, targetAccount);
+  new InstaLidMiner(page, targetAccount);
 
 })();
