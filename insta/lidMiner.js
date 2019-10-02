@@ -39,62 +39,56 @@ const _startMining = async () => {
   const windSelector = '.isgrP';
   await _page.waitForSelector(windSelector);
 
+  const liSelector = '.PZuss';
+  await _page.waitForSelector(liSelector);
+
   const followersWindow = await _page.evaluate(async data => {
 
     console.log(' evaluate data =============>');
     console.log(data);
+    console.log(document);
     const wind = document.querySelector(data.windSelector);
+    const liCont = document.querySelector('.PZuss');
 
     console.log(` ========>>>>>>>> data._followData.followersCount = ${data._followData.followersCount}`);
 
-    let i = 100// Number(data._followData.followersCount.replace(' ', '').replace(' ', ''))
-
     await new Promise((resolve) => {
       setTimeout(() => { resolve(); }, 3000);
-      });
+    });
 
-    for(i; i>0; i-=1) {
+    let i = 10// Number(data._followData.followersCount.replace(' ', '').replace(' ', ''))
 
+    for (i; i > 0; i -= 1) {
       console.log(`i = ${i}`);
       wind.scrollTop += 383;
 
       await new Promise((resolve) => {
         setTimeout(() => { resolve(); }, 100);
-        });
-      
+      });
     }
 
+    await new Promise((resolve) => {
+      setTimeout(() => { resolve(); }, 1000);
+    });
 
-    //wind.scrollBy(0, wind.innerHeight);
-    console.log( ` === wind.scrollTop ==== ${wind.scrollTop}`);
-    console.log( ` === wind.offsetHeight ==== ${wind.offsetHeight}`);
-    // wind.scrollTop = wind.offsetHeight;
-    console.log(' ------------------------------------------- ');
-    console.log( ` === wind.scrollTop ==== ${wind.scrollTop}`);
-    console.log( ` === wind.offsetHeight ==== ${wind.offsetHeight}`);
+    i = Number(data._followData.followersCount.split(' ').join(''));
+    for (i; i > 0; i -= 1) {
+      console.log(`i = ${i}`);
+      wind.scrollTop += 383;
 
-    console.log('wind = ');
-    console.log(wind);
-    // const liArr = wind.querySelectorAll('li');
-    // const liArr = wind.querySelectorAll('li');
-    // console.log('liArr = ');
-    // console.log(liArr);
-    // console.log(' === liArr[0].offsetHeight =========== ');
-    // console.log(liArr[0].height);
+      await new Promise((resolve) => {
+        setTimeout(() => { resolve(); }, 10);
+      });
+    }
 
-    // return liArr;
-  }, {windSelector, _followData});
-
-  const liSelector = '.PZuss';
-  await _page.waitForSelector(windSelector);
-  const liMiner = await _page.evaluate(liSelector => {
-    const liCont = document.querySelector(liSelector);
-    console.log('liCont======== ');
+    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
     console.log(liCont);
     const liArr = liCont.querySelectorAll('li');
     console.log('liArr ========== ');
     console.log(liArr);
-  }, liSelector);
+    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+
+  }, { windSelector, _followData });
 
   console.log('followersWindow ===========> ');
   console.log(followersWindow);
