@@ -21,7 +21,7 @@ class LidRecorder {
     }
 
     async record(data) {
-        console.log(`>> record to Lidrecored to ${_account} some data:`);
+        console.log(`>> record to Lidrecored from ${_account} some data:`);
         console.log(data);
 
         Object.assign(_resultObject, data);
